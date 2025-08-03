@@ -6,5 +6,5 @@
 |Repository|Description|Stars|
 |-|-|-|
 {% for repo in repos -%}
-|[{{ repo.name }}]({{ repo.url }})|{{ repo.description | replace('|', '\\|') }}|{{repo.stars }}|
+|[{{ repo.name }}]({{ repo.url }})|{{ repo.description | replace('|', '\|') }}|{{repo.stars }}|
 {% endfor %}
