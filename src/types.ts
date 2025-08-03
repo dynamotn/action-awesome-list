@@ -67,10 +67,11 @@ export interface ResponseRepo {
   url: Repo['url']
 }
 
-export interface TemplateVars {
+export interface TemplateOverallVars {
   dataVersion: number
   updatedAt: Timestamp
   generatedAt: Timestamp
+  languageFilePattern: string
 
   login: string
   truncated: boolean
@@ -81,6 +82,11 @@ export interface TemplateVars {
   byTopic: TopicGroups
   languages: string[]
   topics: Topic[]
+}
+
+export interface TemplateLanguageVars {
+  repos: StarredRepo[]
+  language: string
 }
 
 export interface Language {

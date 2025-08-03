@@ -143,9 +143,13 @@ by default, supported values are any parameters to `git-pull`. Note that
 
 Configuration options for generated file output.
 
-#### `config.output.filename` (default `README.md`)
+#### `config.output.overall_filename` (default `README.md`)
 
-The output filename to use for the generated list of stars.
+The output overall filename to use for the generated list of stars.
+
+#### `config.output.language_filepattern` (default `docs/%s.md`)
+
+The output language-specific file pattern to use for the generated list of stars.
 
 #### `config.stars`
 
@@ -165,18 +169,21 @@ stargazing data will be loaded from the `data.json` file in the repository.
 
 Configuration options for template discovery and parsing.
 
-### `config.template.source` (default `./TEMPLATE.md.njk`)
+### `config.template.overall` (default `./templates/overall.md.njk`)
 
-The template path relative to the repo root directory. The default value is
-[`TEMPLATE.md.njk`][default-template], a [Nunjucks][nunjucks] template.
+The template path of overall relative to the repo root directory. The default value is
+[`./templates/README.md.njk`][overall-template], a [Nunjucks][nunjucks] template.
+
+### `config.template.language` (default `./templates/language.md.njk`)
+
+The template path of language-specific relative to the repo root directory. The default value is
+[`./templates/language.md.njk`][language-template], a [Nunjucks][nunjucks] template.
 
 See [Template Data](#template-data) for more details.
 
 ### Deprecated Input Parameters
 
-- `template_path` (use `config.template.source`)
 - `date_time` (use `config.format.date_time`)
-- `output_filename` (use `config.output.filename`)
 - `git_commit_message` (use `config.git.commit_message`)
 - `git_name` (use `config.git.name`)
 - `git_email` (use `config.git.email`)
@@ -368,7 +375,6 @@ jobs:
 [date_style]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#datestyle
 [day_period]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#dayperiod
 [day]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#day
-[default-template]: ./TEMPLATE.md.njk
 [dtopt]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#date-time_component_options
 [era]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#era
 [fractional_second_digits]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#fractionalseconddigits
@@ -392,5 +398,3 @@ jobs:
 [time_zone]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#timezone
 [weekday]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#weekday
 [year]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat#year
-[gateway]: https://github.com/orgs/community/discussions/36441#discussioncomment-11008673
-[nunjucks]: https://mozilla.github.io/nunjucks/

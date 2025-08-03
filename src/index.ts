@@ -21,11 +21,6 @@ export async function main() {
 
   const files: GeneratedFile[] = []
 
-  template.compile(
-    readFileSync(config.template.source.path, 'utf8'),
-    config.template.source.name,
-  )
-
   await git.setup(config)
   await git.pull(config.git.pullFlags)
   await git.status()
@@ -39,11 +34,30 @@ export async function main() {
 
   const vars = stars.resolveResponse(response, config)
 
-  const rendered = template.render(vars)
+  template.compile(
+    readFileSync(config.template.overall.path, 'utf8'),
+    config.template.overall.name,
+  )
+  let rendered = template.render(vars)
   files.push({
-    filename: config.output.filename,
+    filename: config.output.overall_filename,
     data: await markdown.generate(rendered),
   })
+
+  template.compile(
+    readFileSync(config.template.language.path, 'utf8'),
+    config.template.language.name,
+  )
+  for (const language of vars.languages) {
+    rendered = template.render({
+      repos: vars.byLanguage[language],
+      language: language,
+    })
+    files.push({
+      filename: config.output.language_filepattern.replace('%s', language),
+      data: await markdown.generate(rendered),
+    })
+  }
 
   core.debug('Rendered template')
 

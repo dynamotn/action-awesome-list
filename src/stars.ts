@@ -22,7 +22,7 @@ import type {
   Release,
   ResponseRepo,
   StarredRepo,
-  TemplateVars,
+  TemplateOverallVars,
   Topic,
   TopicGroups,
 } from './types.js'
@@ -149,7 +149,7 @@ const isValidQueryResponse = (input: unknown): QueryResponse | undefined => {
 export const resolveResponse = (
   response: QueryResponse,
   config: Config,
-): TemplateVars => {
+): TemplateOverallVars => {
   const stars = response.stars.map((repo) => resolveResponseRepo(repo, config))
   const byLanguage = groupByMainLanguage(stars)
   const byTopic = groupByTopics(stars)
@@ -162,6 +162,7 @@ export const resolveResponse = (
     dataVersion: response.dataVersion,
     updatedAt: timestamp(config, response.updatedAt),
     generatedAt: timestamp(config),
+    languageFilePattern: config.output.language_filepattern,
 
     login: response.login,
     truncated: response.truncated,

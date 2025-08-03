@@ -1,0 +1,10 @@
+# {{ language }}
+
+{%- set count = repos | length -%}
+{% if count > 1 %}{{ count }} repos{% endif %}
+
+|Repository|Description|Stars|
+|-|-|-|
+{% for repo in repos -%}
+|[{{ repo.name }}]({{ repo.url }})|{{ repo.description | replace('|', '\\|') }}|{{repo.stars }}|
+{% endfor %}

@@ -16,8 +16,10 @@ export const resolve = async (): Promise<Config> => {
     git_name: core.getInput('git_name'),
     git_pull_options: core.getInput('git_pull_options'),
     load_stars_from_json: core.getInput('load_stars_from_json'),
-    output_filename: core.getInput('output_filename'),
-    template_path: core.getInput('template_path'),
+    output_overall_filename: core.getInput('output_overall_filename'),
+    output_language_filepattern: core.getInput('output_language_filepattern'),
+    overall_template_path: core.getInput('overall_template_path'),
+    language_template_path: core.getInput('language_template_path'),
   })
 }
 
@@ -152,9 +154,13 @@ export interface GitConfig {
  */
 export interface OutputConfig {
   /**
-   * The output filename relative to the git repository or the action root.
+   * The output overall filename relative to the git repository or the action root.
    */
-  filename: string
+  overall_filename: string
+  /**
+   * The output language-specific file pattern relative to the git repository or the action root.
+   */
+  language_filepattern: string
 }
 
 /**
@@ -176,9 +182,13 @@ export interface StarsConfig {
  */
 export interface TemplateConfig {
   /**
-   * The file reference to the source.
+   * The file reference to the overall.
    */
-  source: FileReference
+  overall: FileReference
+  /**
+   * The file reference to the language-specific.
+   */
+  language: FileReference
 }
 
 /**
@@ -204,8 +214,10 @@ interface InputParameters {
   git_name: string
   git_pull_options: string
   load_stars_from_json: string
-  output_filename: string
-  template_path: string
+  output_overall_filename: string
+  output_language_filepattern: string
+  overall_template_path: string
+  language_template_path: string
 }
 
 const resolveConfig = async (
@@ -623,7 +635,7 @@ const resolveGitConfig = async (
 
 const resolveOutputConfig = async (
   base: object,
-  { output_filename }: InputParameters,
+  { output_overall_filename, output_language_filepattern }: InputParameters,
 ): Promise<OutputConfig> => {
   let output: unknown = base == null ? null : 'output' in base ? base.output : null
 
@@ -632,23 +644,27 @@ const resolveOutputConfig = async (
     output = null
   }
 
-  let filename: string | undefined
+  let overall_filename: string | undefined
+  let language_filepattern: string | undefined
 
   if (output && typeof output === 'object' && !Array.isArray(output)) {
-    if ('filename' in output) {
-      filename = resolveString('filename', output.filename)
+    if ('overall_filename' in output) {
+      overall_filename = resolveString('overall_filename', output.overall_filename)
+    }
+    if ('language_filepattern' in output) {
+      language_filepattern = resolveString(
+        'language_filepattern',
+        output.language_filepattern,
+      )
     }
   }
 
-  if (!filename && output_filename) {
-    core.warning('input output_filename is deprecated, use input config output.filename')
-    filename = output_filename
-  }
-
-  filename = filename || 'README.md'
+  overall_filename = overall_filename || 'README.md'
+  language_filepattern = language_filepattern || 'docs/%s.md'
 
   return {
-    filename,
+    overall_filename,
+    language_filepattern,
   }
 }
 
@@ -701,7 +717,7 @@ const resolveStarsConfig = async (
 
 const resolveTemplateConfig = async (
   base: object,
-  { template_path }: InputParameters,
+  { overall_template_path, language_template_path }: InputParameters,
 ): Promise<TemplateConfig> => {
   let template: unknown = base == null ? null : 'template' in base ? base.template : null
 
@@ -710,23 +726,24 @@ const resolveTemplateConfig = async (
     template = null
   }
 
-  let source: string | undefined
+  let overall: string | undefined
+  let language: string | undefined
 
   if (template && typeof template === 'object' && !Array.isArray(template)) {
-    if ('source' in template) {
-      source = resolveString('source', template.source)
+    if ('overall' in template) {
+      overall = resolveString('overall', template.overall)
+    }
+    if ('language' in template) {
+      language = resolveString('language', template.language)
     }
   }
 
-  if (!source && template_path) {
-    core.warning('input template_path is deprecated, use input config template.source')
-    source = template_path
-  }
-
-  source = source || 'TEMPLATE.md.njk'
+  overall = overall || 'templates/overall.md.njk'
+  language = language || 'templates/language.md.njk'
 
   return {
-    source: await resolveFileReference(source),
+    overall: await resolveFileReference(overall),
+    language: await resolveFileReference(language),
   }
 }
 
