@@ -58,6 +58,11 @@ export interface Config {
   output: OutputConfig
 
   /**
+   * Resolved retry configuration.
+   */
+  retry: RetryConfig
+
+  /**
    * Resolved stars configuration.
    */
   stars: StarsConfig
@@ -150,6 +155,16 @@ export interface GitConfig {
 }
 
 /**
+ * Resolved retry configuration.
+ */
+export interface RetryConfig {
+  /**
+   * The number of times to retry the main function on failure. Defaults to 0.
+   */
+  attempts: number
+}
+
+/**
  * Resolved output configuration.
  */
 export interface OutputConfig {
@@ -237,6 +252,7 @@ const resolveConfig = async (
     format: await resolveFormatConfig(base, inputs),
     git: await resolveGitConfig(base, inputs),
     output: await resolveOutputConfig(base, inputs),
+    retry: await resolveRetryConfig(base),
     stars: await resolveStarsConfig(base, inputs),
     template: await resolveTemplateConfig(base, inputs),
   }
@@ -665,6 +681,34 @@ const resolveOutputConfig = async (
   return {
     overall_filename,
     language_filepattern,
+  }
+}
+
+const resolveRetryConfig = async (base: object): Promise<RetryConfig> => {
+  let retry: unknown = base == null ? null : 'retry' in base ? base.retry : null
+
+  if ((retry != null && typeof retry !== 'object') || Array.isArray(retry)) {
+    core.warning('config.retry is not a dictionary or null')
+    retry = null
+  }
+
+  let attempts: number | undefined
+
+  if (retry && typeof retry === 'object' && !Array.isArray(retry)) {
+    if ('attempts' in retry) {
+      const value = retry.attempts
+      if (typeof value === 'number' && value >= 0 && Number.isInteger(value)) {
+        attempts = value
+      } else if (value != null) {
+        core.warning('config.retry.attempts must be a non-negative integer')
+      }
+    }
+  }
+
+  attempts = attempts ?? 3
+
+  return {
+    attempts,
   }
 }
 

@@ -139,17 +139,24 @@ The method to use when calling `git-pull` prior to committing the update. Blank
 by default, supported values are any parameters to `git-pull`. Note that
 `--tags` and `--unshallow` will be added automatically as required.
 
-### `config.output`
+#### `config.output`
 
 Configuration options for generated file output.
 
-#### `config.output.overall_filename` (default `README.md`)
+##### `config.output.filename` (default `README.md`)
 
 The output overall filename to use for the generated list of stars.
 
-#### `config.output.language_filepattern` (default `docs/%s.md`)
+##### `config.output.language_filepattern` (default `docs/%s.md`)
 
 The output language-specific file pattern to use for the generated list of stars.
+
+#### config.retry
+Configuration options for generated retry behavior.
+
+##### `config.retry.attempts` (default `3`)
+
+The number of retry attempts to make for failed runs.
 
 #### `config.stars`
 

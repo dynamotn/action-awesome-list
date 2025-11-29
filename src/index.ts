@@ -92,7 +92,24 @@ export async function main() {
 
 export async function run(): Promise<void> {
   try {
-    await main()
+    const config = await cfg.resolve()
+    let lastError: unknown
+
+    for (let attempt = 0; attempt <= config.retry.attempts; attempt++) {
+      try {
+        await main()
+        return
+      } catch (error) {
+        lastError = error
+        if (attempt < config.retry.attempts) {
+          core.warning(
+            `Attempt ${attempt + 1} failed, retrying... (${config.retry.attempts - attempt} attempts left)`,
+          )
+        }
+      }
+    }
+
+    throw lastError
   } catch (error) {
     core.setFailed(`#run: ${error}`)
 
